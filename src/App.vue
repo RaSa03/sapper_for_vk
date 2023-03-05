@@ -1,5 +1,9 @@
 <script setup>
 import { ref, onBeforeMount } from "vue";
+import { useConstants } from "@/components/composables/constants.js";
+import { useSimlpeFunctions } from "@/components/composables/simpleFunctions.js";
+const { DIGITS_COLOR, SMILE_STATUS } = useConstants();
+const { xyToIndex, indexToXY, outBounds, random } = useSimlpeFunctions();
 const mines = ref([]);
 const cells = ref(Array(256).fill(false));
 const flags = ref([]);
@@ -7,35 +11,10 @@ const bombs = ref(0);
 const secunds = ref(0);
 const gameStatus = ref("waiting");
 const fear = ref(false);
-const smileSatus = {
-  waiting: "smile",
-  inGame: "smile",
-  gameOver: "loss",
-  win: "win",
-};
+
 const openedCells = ref(0);
 let start = "";
 let fearTimeout = "";
-
-const DIGITS_COLOR = {
-  1: "blue",
-  2: "green",
-  3: "red",
-  4: "navy",
-  5: "darkred",
-  6: "teal",
-  7: "black",
-  8: "grey",
-};
-onBeforeMount(() => {
-  fillMinesAndCells();
-});
-
-const indexToXY = (index) => {
-  const x = Math.floor(index / 16);
-  const y = index % 16;
-  return { x, y };
-};
 
 const stopwatch = () => {
   stopTheStopwatch();
@@ -59,9 +38,7 @@ const fillMinesAndCells = () => {
     mines.value[i] = arr;
   }
 };
-const outBounds = (x, y) => {
-  return x < 0 || y < 0 || x > 15 || y > 15;
-};
+
 const clearGame = () => {
   stopTheStopwatch();
   gameStatus.value = "waiting";
@@ -99,20 +76,12 @@ const isAmine = (index) => {
   if (mines.value[x][y] === "bomb") return true;
   return false;
 };
-const random = () => {
-  let rand = -0.5 + Math.random() * 256;
-  const coordinate = Math.round(rand);
 
-  return indexToXY(coordinate);
-};
 const howManyBombs = (index) => {
   const { x, y } = indexToXY(index);
   return mines.value[x][y];
 };
 
-const xyToIndex = (x, y) => {
-  return x * 16 + y;
-};
 const gameOver = (index) => {
   gameStatus.value = "gameOver";
   stopTheStopwatch("just stop");
@@ -182,6 +151,10 @@ const putUpFlagOrFear = (idx) => {
     }, 200);
   }
 };
+
+onBeforeMount(() => {
+  fillMinesAndCells();
+});
 </script>
 
 <template>
@@ -200,7 +173,7 @@ const putUpFlagOrFear = (idx) => {
             <img
               v-else
               class="smile-icon"
-              :src="`../src/assets/smiles/${smileSatus[gameStatus]}.webp`"
+              :src="`../src/assets/smiles/${SMILE_STATUS[gameStatus]}.webp`"
               alt=""
             />
           </div>
