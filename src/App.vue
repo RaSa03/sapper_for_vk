@@ -2,7 +2,7 @@
 import { ref, onBeforeMount } from "vue";
 import { useConstants } from "@/components/composables/constants.js";
 import { useSimlpeFunctions } from "@/components/composables/simpleFunctions.js";
-const { DIGITS_COLOR, SMILE_STATUS } = useConstants();
+const { DIGITS_COLOR } = useConstants();
 const { xyToIndex, indexToXY, outBounds, random } = useSimlpeFunctions();
 const mines = ref([]);
 const cells = ref(Array(256).fill(false));
@@ -11,20 +11,20 @@ const bombs = ref(0);
 const secunds = ref(0);
 const gameStatus = ref("waiting");
 const fear = ref(false);
-
 const openedCells = ref(0);
 let start = "";
 let fearTimeout = "";
 
-const stopwatch = () => {
-  stopTheStopwatch();
-  start = setInterval(() => secunds.value++, 1000);
+const isAmine = (index) => {
+  const { x, y } = indexToXY(index);
+  if (mines.value[x][y] === "bomb") return true;
+  return false;
 };
-const stopTheStopwatch = (condition) => {
-  clearInterval(start);
-  if (condition) return;
-  secunds.value = 0;
+const howManyBombs = (index) => {
+  const { x, y } = indexToXY(index);
+  return mines.value[x][y];
 };
+
 const fillMinesAndCells = () => {
   for (let i = 0; i < 256; i++) {
     flags.value[i] = false;
@@ -39,21 +39,22 @@ const fillMinesAndCells = () => {
   }
 };
 
-const clearGame = () => {
+const stopwatch = () => {
   stopTheStopwatch();
-  gameStatus.value = "waiting";
-  openedCells.value = 0;
-  fillMinesAndCells();
-  bombs.value = 0;
+  start = setInterval(() => secunds.value++, 1000);
+};
+const stopTheStopwatch = (condition) => {
+  clearInterval(start);
+  if (condition) return;
+  secunds.value = 0;
 };
 
 const startGame = (startPositionX, startPositionY) => {
   stopwatch();
-  console.log(startPositionX, startPositionY);
+
   while (bombs.value < 40) {
     const { x, y } = random();
     if (x === startPositionX && y === startPositionY) {
-      console.log(x, y);
       continue;
     } else if (mines.value[x][y] !== "bomb") {
       mines.value[x][y] = "bomb";
@@ -70,18 +71,13 @@ const startGame = (startPositionX, startPositionY) => {
     }
   }
 };
-
-const isAmine = (index) => {
-  const { x, y } = indexToXY(index);
-  if (mines.value[x][y] === "bomb") return true;
-  return false;
+const clearGame = () => {
+  stopTheStopwatch();
+  gameStatus.value = "waiting";
+  openedCells.value = 0;
+  fillMinesAndCells();
+  bombs.value = 0;
 };
-
-const howManyBombs = (index) => {
-  const { x, y } = indexToXY(index);
-  return mines.value[x][y];
-};
-
 const gameOver = (index) => {
   gameStatus.value = "gameOver";
   stopTheStopwatch("just stop");
@@ -126,7 +122,7 @@ const clickCell = (index) => {
     }
   }
   openedCells.value++;
-  if (openedCells.value === 216 && bombs.value === 0) gameWin();
+  if (openedCells.value === 216) gameWin();
 };
 const putUpFlagOrFear = (idx) => {
   const putFlag = (index) => {
@@ -171,9 +167,21 @@ onBeforeMount(() => {
               alt=""
             />
             <img
-              v-else
+              v-else-if="gameStatus === 'waiting' || gameStatus === 'inGame'"
               class="smile-icon"
-              :src="`../src/assets/smiles/${SMILE_STATUS[gameStatus]}.webp`"
+              src="../src/assets/smiles/smile.webp"
+              alt=""
+            />
+            <img
+              v-else-if="gameStatus === 'gameOver'"
+              class="smile-icon"
+              src="../src/assets/smiles/loss.webp"
+              alt=""
+            />
+            <img
+              v-else-if="gameStatus === 'win'"
+              class="smile-icon"
+              src="../src/assets/smiles/win.webp"
               alt=""
             />
           </div>
