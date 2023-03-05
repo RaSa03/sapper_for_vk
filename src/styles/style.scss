@@ -1,0 +1,106 @@
+@import "./nullstyle.scss";
+
+@font-face {
+  font-family: "lcdbold";
+  src: url("@/assets/fonts/LCD/lcd.ttf");
+}
+
+$dark-grey: rgb(117, 117, 117);
+$light: rgb(249, 249, 249);
+$gray: rgb(187, 187, 187);
+$bg: rgb(192, 192, 192);
+@mixin btn {
+  min-width: 30px;
+  min-height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("@/assets/icons/btn-bg.png") 0 0 / contain no-repeat;
+  box-shadow: 0px 0px 2px $dark-grey;
+}
+@mixin inside-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 77%;
+  height: 77%;
+  box-shadow: 0px 0px 2px $gray;
+  border-radius: 1px;
+  background: $gray;
+}
+
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  .sapper {
+    width: 540px;
+    height: 600px;
+    margin: 0 auto;
+    background: $bg;
+    padding: 20px;
+    box-shadow: inset 4px 4px 2px $light, inset -4px -4px 2px $dark-grey;
+
+    .results_window {
+      box-shadow: inset 4px 4px 2px $dark-grey, inset -4px -4px 2px $light;
+      padding: 15px;
+      height: 70px;
+      font-family: "lcdbold";
+      align-items: center;
+      justify-content: space-between;
+      display: flex;
+      font-size: 3rem;
+      line-height: 0.8;
+      .bombs {
+        color: red;
+        background: url("@/assets/icons/bg-clock.png") 0 0 / contain no-repeat;
+      }
+      .btn-smiley {
+        @include btn;
+
+        width: 40px;
+        height: 40px;
+        .smiley {
+          @include inside-btn;
+          .smile-icon {
+          }
+        }
+      }
+      .stopwatch {
+        color: red;
+        background: url("@/assets/icons/bg-clock.png") 0 0 / contain no-repeat;
+      }
+      .thousand {
+        background: url("@/assets/icons/bg1000.png") 0 0 / contain no-repeat;
+      }
+    }
+    .field {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      grid-template-rows: repeat(16, 1fr);
+
+      padding: 5px;
+      box-shadow: inset 4px 4px 2px $dark-grey, inset -4px -4px 2px $light;
+
+      .btn-wrapper {
+        @include btn;
+
+        .unset {
+          font-weight: 900;
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+          font-size: 1.5rem;
+          @include inside-btn;
+          .redbomb {
+            display: block;
+            // background: rgb(235, 15, 25);
+            min-width: 125%;
+            border-radius: 2px;
+          }
+        }
+      }
+      .clicked {
+        background: $gray;
+        box-shadow: inset 0 0 2px;
+      }
+    }
+  }
+}
